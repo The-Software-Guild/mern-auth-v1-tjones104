@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from "react";
 
-class PutBugs extends Component {
+class PutItems extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +26,7 @@ class PutBugs extends Component {
     const assignee = this.props.assignee._id;
     axios
       .put(
-        `http://localhost:8080/api/bugs/${this.props.id}`,
+        `http://localhost:8080/api/items/${this.props.id}`,
         { title, description, time, date, assignee },
         {
           headers: {
@@ -52,7 +52,7 @@ class PutBugs extends Component {
     return (
       <div className="put-item">
         <div>
-          <h2>Update a Bug</h2>
+          <h2>Update a Item</h2>
           <form onSubmit={this.handleSubmit}>
             <label>Title:</label>
             <input
@@ -103,4 +103,4 @@ class PutBugs extends Component {
   }
 }
 
-export default PutBugs;
+export default PutItems;

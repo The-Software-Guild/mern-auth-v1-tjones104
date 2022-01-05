@@ -1,8 +1,13 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Navbar from "./components/navbar";
 import Home from "./components/home";
-import GetBugs from "./components/getBugs";
-import PostBugs from "./components/postBugs";
+import GetItems from "./components/getItems";
+import PostItems from "./components/postItems";
 import Register from "./components/register";
 import Login from "./components/login";
 import UnknownPage from "./components/UnknownPage";
@@ -11,6 +16,7 @@ import "./App.css";
 
 class App extends Component {
   state = {
+    user: false,
     token: "",
   };
 
@@ -21,12 +27,18 @@ class App extends Component {
 
     const data = JSON.parse(localStorage.getItem("state"));
     if (data.token !== "") {
-      this.setState({ token: data.token });
+      this.setState({ user: data.user, token: data.token });
+    } else {
+      this.setState({ user: false, token: "" });
     }
   }
   componentDidUpdate() {
     localStorage.setItem("state", JSON.stringify(this.state));
   }
+
+  handleUser = (data) => {
+    this.setState({ user: data });
+  };
 
   handleToken = (data) => {
     this.setState({ token: data });
@@ -36,17 +48,49 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <Navbar token={this.state.token} handleToken={this.handleToken} />
+          <Navbar
+            state={this.state}
+            handleToken={this.handleToken}
+            handleUser={this.handleUser}
+          />
           <div className="main">
             <Routes>
               <Route exact path="/" element={<Home />}></Route>
-              <Route path="/GetBugs" element={<GetBugs />}>
-                <Route path=":id" element={<GetBugs />}></Route>
+              <Route
+                path="/GetItems"
+                element={
+                  this.state.token === "" ? (
+                    <Navigate to="/login" />
+                  ) : (
+                    <GetItems user={this.state.user} />
+                  )
+                }
+              >
+                <Route
+                  path=":id"
+                  element={<GetItems user={this.state.user} />}
+                ></Route>
               </Route>
-              <Route path="/PostBugs" element={<PostBugs />}></Route>
+              <Route
+                path="/PostItems"
+                element={
+                  this.state.token === "" ? (
+                    <Navigate to="/login" />
+                  ) : this.state.user.admin === false ? (
+                    <Navigate to="/" />
+                  ) : (
+                    <PostItems />
+                  )
+                }
+              ></Route>
               <Route
                 path="/Login"
-                element={<Login handleToken={this.handleToken} />}
+                element={
+                  <Login
+                    handleToken={this.handleToken}
+                    handleUser={this.handleUser}
+                  />
+                }
               ></Route>
               <Route path="/Register" element={<Register />}></Route>
               <Route path="*" element={<UnknownPage />}></Route>

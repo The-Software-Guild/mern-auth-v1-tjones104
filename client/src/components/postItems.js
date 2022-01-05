@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 
-class PostBugs extends Component {
+class PostItems extends Component {
   constructor() {
     super();
 
@@ -41,7 +41,7 @@ class PostBugs extends Component {
     const { title, description, time, date } = this.state;
     axios
       .post(
-        "http://localhost:8080/api/bugs",
+        "http://localhost:8080/api/items",
         { title, description, time, date },
         {
           headers: {
@@ -61,11 +61,11 @@ class PostBugs extends Component {
   render() {
     const { redirect } = this.state;
     if (redirect) {
-      return <Navigate to="/getBugs" />;
+      return <Navigate to="/getItems" />;
     }
     return (
       <div className="post-item">
-        <h2>Post a new Bug</h2>
+        <h2>Post a new Item</h2>
         <form className="post-form" onSubmit={this.handleSubmit}>
           <label>Title:</label>
           <input
@@ -87,11 +87,11 @@ class PostBugs extends Component {
           <input type="time" name="time" value={this.state.time} disabled />
           <label>Date:</label>
           <input type="date" name="date" value={this.state.date} disabled />
-          <button>Post Bug</button>
+          <button>Post Item</button>
         </form>
       </div>
     );
   }
 }
 
-export default PostBugs;
+export default PostItems;

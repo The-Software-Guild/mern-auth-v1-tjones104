@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-// const User = require("./users");
 
-const bugSchema = new Schema(
+const itemsSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -13,6 +12,6 @@ const bugSchema = new Schema(
   { versionKey: false }
 );
 
-const Bug = mongoose.model("Bug", bugSchema);
+const Item = mongoose.model("Item", itemsSchema);
 
-module.exports = Bug;
+module.exports = Item;

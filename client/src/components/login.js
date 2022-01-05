@@ -25,8 +25,10 @@ class Login extends Component {
       .post("http://localhost:8080/api/login", { email, password })
       .then((res) => {
         const token = res.data.token;
+        const user = res.data.result.admin;
         alert("Success: User Logged in, redirecting to home");
         this.props.handleToken(token);
+        this.props.handleUser(user);
         this.setState({ redirect: true });
       })
       .catch((error) => {

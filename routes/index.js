@@ -1,8 +1,8 @@
 const users = require("./users");
-const bugs = require("./bugs");
+const items = require("./items");
 
 module.exports = (router) => {
   users(router);
-  bugs(router);
+  items(router);
   return router;
 };

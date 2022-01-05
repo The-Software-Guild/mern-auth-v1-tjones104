@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import axios from "axios";
 
-class DeleteBugs extends Component {
+class DeleteItems extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const data = JSON.parse(localStorage.getItem("state"));
     axios
-      .delete(`http://localhost:8080/api/bugs/${this.props.id}`, {
+      .delete(`http://localhost:8080/api/items/${this.props.id}`, {
         headers: {
           Authorization: `Bearer ${data.token}`,
         },
@@ -33,4 +33,4 @@ class DeleteBugs extends Component {
   }
 }
 
-export default DeleteBugs;
+export default DeleteItems;

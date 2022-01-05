@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Bug = require("../models/bugs");
+const Item = require("../models/items");
 
 const URI = process.env.MONGO_LOCAL_CONN_URL;
 
@@ -9,7 +9,7 @@ module.exports = {
     mongoose.connect(URI, (err) => {
       if (!err) {
         if (Object.keys(query).length != 0) {
-          Bug.find(query)
+          Item.find(query)
             .populate("assignee")
             .then((result) => {
               if (Object.keys(result).length === 0) {
@@ -22,7 +22,7 @@ module.exports = {
               next(new Error(err));
             });
         } else {
-          Bug.find()
+          Item.find()
             .populate("assignee")
             .then((result) => {
               res.status(200).send(result);
@@ -39,7 +39,7 @@ module.exports = {
   getOne: (req, res, next) => {
     mongoose.connect(URI, (err) => {
       if (!err) {
-        Bug.findById(req.params.id)
+        Item.findById(req.params.id)
           .populate("assignee")
           .then((result) => {
             res.status(200).send(result);
@@ -56,12 +56,12 @@ module.exports = {
     const payload = req.decoded;
     const assignee = payload.user._id;
     const { title, description, time, date } = req.body;
-    const bug = new Bug({ title, description, time, date, assignee });
+    const item = new Item({ title, description, time, date, assignee });
 
     mongoose.connect(URI, (err) => {
       if (!err) {
         if (payload.user.admin === true) {
-          bug
+          item
             .save()
             .then((result) => {
               res.status(201).send(result);
@@ -82,7 +82,7 @@ module.exports = {
       if (!err) {
         const payload = req.decoded;
         if (payload.user.admin === true) {
-          Bug.findByIdAndUpdate(req.params.id, req.body)
+          Item.findByIdAndUpdate(req.params.id, req.body)
             .then((result) => {
               res.status(201).send(result);
             })
@@ -102,7 +102,7 @@ module.exports = {
       if (!err) {
         const payload = req.decoded;
         if (payload.user.admin === true) {
-          Bug.findByIdAndDelete(req.params.id)
+          Item.findByIdAndDelete(req.params.id)
             .then((result) => {
               res.status(201).send(result);
             })

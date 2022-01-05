@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import axios from "axios";
-import DeleteBugs from "./deleteBugs";
-import PutBugs from "./putBugs";
+import DeleteItems from "./deleteItems";
+import PutItems from "./putItems";
 import Modal from "./modal";
 import withRouter from "./withRouter";
 
-class GetBugs extends Component {
-  constructor() {
-    super();
+class GetItems extends Component {
+  constructor(props) {
+    super(props);
     let today = new Date(),
       date =
         today.getFullYear() +
@@ -22,7 +22,7 @@ class GetBugs extends Component {
         today.getMinutes().toString().padStart(2, "0");
 
     this.state = {
-      bugs: [],
+      items: [],
       searchQuery: "",
       searchBy: "_id",
       ToggleModal: false,
@@ -57,43 +57,43 @@ class GetBugs extends Component {
     const data = JSON.parse(localStorage.getItem("state"));
     if (this.props.params.id) {
       axios
-        .get("http://localhost:8080/api/bugs/" + this.props.params.id, {
+        .get("http://localhost:8080/api/items/" + this.props.params.id, {
           headers: {
             Authorization: `Bearer ${data.token}`,
           },
         })
         .then((res) => {
-          const bugs = [];
-          bugs.push(res.data);
-          this.setState({ bugs });
+          const items = [];
+          items.push(res.data);
+          this.setState({ items });
         })
         .catch((error) => {
           alert("Error: Could not fetch");
         });
     } else if (this.props.search) {
       axios
-        .get("http://localhost:8080/api/bugs" + this.props.search, {
+        .get("http://localhost:8080/api/items" + this.props.search, {
           headers: {
             Authorization: `Bearer ${data.token}`,
           },
         })
         .then((res) => {
-          const bugs = res.data;
-          this.setState({ bugs });
+          const items = res.data;
+          this.setState({ items });
         })
         .catch((error) => {
           alert("Error: Could not fetch query");
         });
     } else {
       axios
-        .get("http://localhost:8080/api/bugs", {
+        .get("http://localhost:8080/api/items", {
           headers: {
             Authorization: `Bearer ${data.token}`,
           },
         })
         .then((res) => {
-          const bugs = res.data;
-          this.setState({ bugs });
+          const items = res.data;
+          this.setState({ items });
         })
         .catch((error) => {
           alert("Error: Could not fetch");
@@ -106,7 +106,7 @@ class GetBugs extends Component {
     e.preventDefault();
     axios
       .get(
-        "http://localhost:8080/api/bugs?" +
+        "http://localhost:8080/api/items?" +
           this.state.searchBy +
           "=" +
           this.state.searchQuery,
@@ -117,8 +117,8 @@ class GetBugs extends Component {
         }
       )
       .then((res) => {
-        const bugs = res.data;
-        this.setState({ bugs });
+        const items = res.data;
+        this.setState({ items });
       })
       .catch((error) => {
         alert("Error: Could not fetch query");
@@ -128,7 +128,7 @@ class GetBugs extends Component {
   render() {
     return (
       <div className="get-list">
-        <h2>Bug List</h2>
+        <h2>Shopping Cart</h2>
         <form onSubmit={this.handleSubmit}>
           <div>
             <div className="search-title">
@@ -150,7 +150,7 @@ class GetBugs extends Component {
             <div>
               <input
                 type="text"
-                placeholder="Ex: Bug 1, Bob"
+                placeholder="Ex: Item 1, Bob"
                 name="searchQuery"
                 value={this.state.searchQuery}
                 onChange={this.handleChange}
@@ -174,12 +174,12 @@ class GetBugs extends Component {
               <th>Assignee</th>
               <th>Id</th>
               <th>Days Left</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              {this.props.user === true && <th>Edit</th>}
+              {this.props.user === true && <th>Delete</th>}
             </tr>
           </thead>
           <tbody>
-            {this.state.bugs.map((items) => (
+            {this.state.items.map((items) => (
               <tr
                 style={
                   items.date < this.state.deadlineDate ||
@@ -208,38 +208,42 @@ class GetBugs extends Component {
                       this.state.deadlineDate.slice(8, 10)}
                   </td>
                 )}
-                <td>
-                  <button
-                    className="edit-button"
-                    onClick={this.handleToggle.bind(this, items._id)}
-                  >
-                    Edit
-                  </button>
-                  <Modal
-                    open={this.state.ToggleModal[items._id]}
-                    onClose={this.handleToggle}
-                  >
-                    <PutBugs
+                {this.props.user === true && (
+                  <td>
+                    <button
+                      className="edit-button"
+                      onClick={this.handleToggle.bind(this, items._id)}
+                    >
+                      Edit
+                    </button>
+                    <Modal
+                      open={this.state.ToggleModal[items._id]}
                       onClose={this.handleToggle}
-                      submit={this.handleReset}
-                      id={items._id}
-                      title={items.title}
-                      description={items.description}
-                      time={items.time}
-                      date={items.date}
-                      assignee={items.assignee}
-                    />
-                  </Modal>
-                </td>
-                <td>
-                  <DeleteBugs submit={this.handleReset} id={items._id} />
-                </td>
+                    >
+                      <PutItems
+                        onClose={this.handleToggle}
+                        submit={this.handleReset}
+                        id={items._id}
+                        title={items.title}
+                        description={items.description}
+                        time={items.time}
+                        date={items.date}
+                        assignee={items.assignee}
+                      />
+                    </Modal>
+                  </td>
+                )}
+                {this.props.user === true && (
+                  <td>
+                    <DeleteItems submit={this.handleReset} id={items._id} />
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
-        {this.state.bugs.length === 0 ? (
-          <p className="noItems">No bugs found</p>
+        {this.state.items.length === 0 ? (
+          <p className="noItems">No items found</p>
         ) : (
           <div />
         )}
@@ -248,4 +252,4 @@ class GetBugs extends Component {
   }
 }
 
-export default withRouter(GetBugs);
+export default withRouter(GetItems);
